@@ -82,6 +82,8 @@
                <pin_label pin_num="11" pin_signal="PTE8/I2S0_RXD1/I2S0_RX_FS/LPUART0_TX/FTM3_CH3" label="BUTTON_RT" identifier="BUTTON_RT"/>
                <pin_label pin_num="12" pin_signal="PTE9/LLWU_P17/I2S0_TXD1/I2S0_RX_BCLK/LPUART0_RX/FTM3_CH4" label="BUTTON_LF" identifier="BUTTON_LF"/>
                <pin_label pin_num="126" pin_signal="PTC19/UART3_CTS_b/ENET0_1588_TMR3/FB_CS3_b/FB_BE7_0_BLS31_24_b/SDRAM_DQM0/FB_TA_b" label="BEEP" identifier="BEEP"/>
+               <pin_label pin_num="103" pin_signal="ADC0_SE14/TSI0_CH13/PTC0/SPI0_PCS4/PDB0_EXTRG/USB0_SOF_OUT/FB_AD14/SDRAM_A22/I2S0_TXD1" label="led" identifier="led"/>
+               <pin_label pin_num="47" pin_signal="PTE26/ENET_1588_CLKIN/UART4_CTS_b/RTC_CLKOUT/USB0_CLKIN" label="led" identifier="led"/>
             </pin_labels>
          </pins_profile>
          <functions_list>
@@ -128,6 +130,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="SWComponent" resourceId="platform.drivers.gpio" description="Pins initialization requires the GPIO Driver in the project." problem_level="2" source="Pins:RTEPIN_Basic">
+                     <feature name="enabled" evaluation="equal" configuration="core0">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                </dependencies>
                <pins>
                   <pin peripheral="JTAG" signal="JTAG_TCLK_SWD_CLK" pin_num="50" pin_signal="TSI0_CH1/PTA0/UART0_CTS_b/UART0_COL_b/FTM0_CH5/LPUART0_CTS_b/JTAG_TCLK/SWD_CLK/EZP_CLK"/>
@@ -159,6 +166,11 @@
                   <pin peripheral="ADC1" signal="VREFL" pin_num="33" pin_signal="VREFL"/>
                   <pin peripheral="ADC0" signal="VALTL" pin_num="34" pin_signal="VSSA"/>
                   <pin peripheral="ADC1" signal="VALTL" pin_num="34" pin_signal="VSSA"/>
+                  <pin peripheral="GPIOC" signal="GPIO, 0" pin_num="103" pin_signal="ADC0_SE14/TSI0_CH13/PTC0/SPI0_PCS4/PDB0_EXTRG/USB0_SOF_OUT/FB_AD14/SDRAM_A22/I2S0_TXD1">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
             <function name="RTEPIN_Digital">
@@ -463,6 +475,11 @@
                         <pin_feature name="direction" value="OUTPUT"/>
                      </pin_features>
                   </pin>
+                  <pin peripheral="GPIOE" signal="GPIO, 26" pin_num="47" pin_signal="PTE26/ENET_1588_CLKIN/UART4_CTS_b/RTC_CLKOUT/USB0_CLKIN">
+                     <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
                </pins>
             </function>
             <function name="RTEPIN_Analog">
@@ -513,6 +530,11 @@
                         <data>true</data>
                      </feature>
                   </dependency>
+                  <dependency resourceType="Peripheral" resourceId="FTM3" description="Peripheral FTM3 is not initialized" problem_level="1" source="Pins:RTEPIN_LPUART0_DBG">
+                     <feature name="initialized" evaluation="equal">
+                        <data>true</data>
+                     </feature>
+                  </dependency>
                   <dependency resourceType="SWComponent" resourceId="platform.drivers.common" description="Pins initialization requires the COMMON Driver in the project." problem_level="2" source="Pins:RTEPIN_LPUART0_DBG">
                      <feature name="enabled" evaluation="equal" configuration="core0">
                         <data>true</data>
@@ -529,6 +551,12 @@
                   <pin peripheral="LPUART0" signal="TX" pin_num="52" pin_signal="TSI0_CH3/PTA2/UART0_TX/FTM0_CH7/I2C3_SCL/LPUART0_TX/JTAG_TDO/TRACE_SWO/EZP_DO">
                      <pin_features>
                         <pin_feature name="direction" value="OUTPUT"/>
+                     </pin_features>
+                  </pin>
+                  <pin peripheral="GPIOE" signal="GPIO, 8" pin_num="11" pin_signal="PTE8/I2S0_RXD1/I2S0_RX_FS/LPUART0_TX/FTM3_CH3"/>
+                  <pin peripheral="FTM3" signal="CH, 5" pin_num="13" pin_signal="PTE10/LLWU_P18/I2C3_SDA/I2S0_TXD0/LPUART0_CTS_b/FTM3_CH5/USB1_ID">
+                     <pin_features>
+                        <pin_feature name="identifier" value=""/>
                      </pin_features>
                   </pin>
                </pins>
@@ -747,7 +775,7 @@
                </feature>
             </dependency>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="工具链/IDE工程不支持EDMA Driver版本。所需值: ${required_value}, 实际值: ${actual_value}. 工程可能没有被正确编译。" problem_level="1" source="Peripherals">
-               <feature name="version" evaluation="equivalent">
+               <feature name="version" evaluation="greaterOrEqual">
                   <data type="Version">2.3.0</data>
                </feature>
             </dependency>

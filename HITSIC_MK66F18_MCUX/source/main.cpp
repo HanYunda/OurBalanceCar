@@ -83,6 +83,8 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 #include "sc_test.hpp"
 
 
+void ledLight(void);
+void bottonControl(void);
 void MENU_DataSetUp(void);
 
 cam_zf9v034_configPacket_t cameraCfg;
@@ -126,6 +128,7 @@ void main(void)
     DISP_SSD1306_Init();
     extern const uint8_t DISP_image_100thAnniversary[8][128];
     DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
+    //disp_ssd1306_frameBuffer_t *dispBuffer = new disp_ssd1306_frameBuffer_t;
     /** 初始化菜单 */
     MENU_Init();
     MENU_Data_NvmReadRegionConfig();
@@ -133,27 +136,61 @@ void main(void)
     /** 菜单挂起 */
     MENU_Suspend();
     /** 初始化摄像头 */
-
+    //TODO: 在这里初始化摄像头
     /** 初始化IMU */
+    //TODO: 在这里初始化IMU（MPU6050）
     /** 菜单就绪 */
+    uint8_t DISP_image_R[8][128];
+    for(int i=0;i<8;i++)
+    {
+         for(int j=0;j<128;j++)
+         {
+             if((i==4||i==3||i==2)&&j>40&&j<100)
+             {
+                DISP_image_R[i][j]=0xFF;
+             }
+             else
+             {
+                DISP_image_R[i][j]=0x00;
+             }
+        }
+    }
+    DISP_SSD1306_BufferUpload((uint8_t*)DISP_image_R);
     MENU_Resume();
+    MENU_Suspend();
     /** 控制环初始化 */
+    //TODO: 在这里初始化控制环
     /** 初始化结束，开启总中断 */
+    pitMgr_t::insert(1000,10,ledLight, pitMgr_t::enable);//使PTE26处的led 1s翻转一次
+    extInt_t::insert(PORTE,10,bottonControl);
     HAL_ExitCritical();
-
-
-
-
     float f = arm_sin_f32(0.6f);
 
     while (true)
     {
-
+        //TODO: 在这里添加车模保护代码
     }
 }
-
+int32_t testInt=0;
 void MENU_DataSetUp(void)
 {
     MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
+    //TODO: 在这里添加子菜单和菜单项
 }
+
+void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
+{
+    //TODO: 补完本回调函数
+
+    //TODO: 添加图像处理（转向控制也可以写在这里）
 }
+
+void ledLight(void)
+{
+    GPIO_PortToggle(GPIOE,1U<<26);
+}
+void bottonControl(void)
+{
+    GPIO_PortToggle(GPIOE,1U<<26);
+}
+

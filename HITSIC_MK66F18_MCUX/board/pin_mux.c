@@ -72,6 +72,8 @@ pin_labels:
 - {pin_num: '11', pin_signal: PTE8/I2S0_RXD1/I2S0_RX_FS/LPUART0_TX/FTM3_CH3, label: BUTTON_RT, identifier: BUTTON_RT}
 - {pin_num: '12', pin_signal: PTE9/LLWU_P17/I2S0_TXD1/I2S0_RX_BCLK/LPUART0_RX/FTM3_CH4, label: BUTTON_LF, identifier: BUTTON_LF}
 - {pin_num: '126', pin_signal: PTC19/UART3_CTS_b/ENET0_1588_TMR3/FB_CS3_b/FB_BE7_0_BLS31_24_b/SDRAM_DQM0/FB_TA_b, label: BEEP, identifier: BEEP}
+- {pin_num: '103', pin_signal: ADC0_SE14/TSI0_CH13/PTC0/SPI0_PCS4/PDB0_EXTRG/USB0_SOF_OUT/FB_AD14/SDRAM_A22/I2S0_TXD1, label: led, identifier: led}
+- {pin_num: '47', pin_signal: PTE26/ENET_1588_CLKIN/UART4_CTS_b/RTC_CLKOUT/USB0_CLKIN, label: led, identifier: led}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -126,6 +128,7 @@ RTEPIN_Basic:
   - {pin_num: '33', peripheral: ADC1, signal: VREFL, pin_signal: VREFL}
   - {pin_num: '34', peripheral: ADC0, signal: VALTL, pin_signal: VSSA}
   - {pin_num: '34', peripheral: ADC1, signal: VALTL, pin_signal: VSSA}
+  - {pin_num: '103', peripheral: GPIOC, signal: 'GPIO, 0', pin_signal: ADC0_SE14/TSI0_CH13/PTC0/SPI0_PCS4/PDB0_EXTRG/USB0_SOF_OUT/FB_AD14/SDRAM_A22/I2S0_TXD1, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -140,6 +143,15 @@ void RTEPIN_Basic(void)
 {
     /* Port A Clock Gate Control: Clock enabled */
     CLOCK_EnableClock(kCLOCK_PortA);
+    /* Port C Clock Gate Control: Clock enabled */
+    CLOCK_EnableClock(kCLOCK_PortC);
+
+    gpio_pin_config_t led_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTC0 (pin 103)  */
+    GPIO_PinInit(RTEPIN_BASIC_led_GPIO, RTEPIN_BASIC_led_PIN, &led_config);
 
     /* PORTA0 (pin 50) is configured as JTAG_TCLK */
     PORT_SetPinMux(RTEPIN_BASIC_SWO_CLK_PORT, RTEPIN_BASIC_SWO_CLK_PIN, kPORT_MuxAlt7);
@@ -152,6 +164,9 @@ void RTEPIN_Basic(void)
 
     /* PORTA5 (pin 55) is configured as JTAG_TRST_b */
     PORT_SetPinMux(RTEPIN_BASIC_RST_PORT, RTEPIN_BASIC_RST_PIN, kPORT_MuxAlt7);
+
+    /* PORTC0 (pin 103) is configured as PTC0 */
+    PORT_SetPinMux(RTEPIN_BASIC_led_PORT, RTEPIN_BASIC_led_PIN, kPORT_MuxAsGpio);
 }
 
 /* clang-format off */
@@ -218,6 +233,7 @@ RTEPIN_Digital:
   - {pin_num: '106', peripheral: FTM0, signal: 'CH, 2', pin_signal: CMP1_IN1/PTC3/LLWU_P7/SPI0_PCS1/UART1_RX/FTM0_CH2/CLKOUT/I2S0_TX_BCLK, direction: OUTPUT}
   - {pin_num: '109', peripheral: FTM0, signal: 'CH, 3', pin_signal: PTC4/LLWU_P8/SPI0_PCS0/UART1_TX/FTM0_CH3/FB_AD11/SDRAM_A19/CMP1_OUT, direction: OUTPUT}
   - {pin_num: '126', peripheral: GPIOC, signal: 'GPIO, 19', pin_signal: PTC19/UART3_CTS_b/ENET0_1588_TMR3/FB_CS3_b/FB_BE7_0_BLS31_24_b/SDRAM_DQM0/FB_TA_b, direction: OUTPUT}
+  - {pin_num: '47', peripheral: GPIOE, signal: 'GPIO, 26', pin_signal: PTE26/ENET_1588_CLKIN/UART4_CTS_b/RTC_CLKOUT/USB0_CLKIN, direction: OUTPUT}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -401,6 +417,13 @@ void RTEPIN_Digital(void)
     };
     /* Initialize GPIO functionality on pin PTE11 (pin 14)  */
     GPIO_PinInit(RTEPIN_DIGITAL_BUTTON_UP_GPIO, RTEPIN_DIGITAL_BUTTON_UP_PIN, &BUTTON_UP_config);
+
+    gpio_pin_config_t led_config = {
+        .pinDirection = kGPIO_DigitalOutput,
+        .outputLogic = 0U
+    };
+    /* Initialize GPIO functionality on pin PTE26 (pin 47)  */
+    GPIO_PinInit(RTEPIN_DIGITAL_led_GPIO, RTEPIN_DIGITAL_led_PIN, &led_config);
 
     /* PORTA11 (pin 63) is configured as PTA11 */
     PORT_SetPinMux(RTEPIN_DIGITAL_SWITCH_1_PORT, RTEPIN_DIGITAL_SWITCH_1_PIN, kPORT_MuxAsGpio);
@@ -656,6 +679,9 @@ void RTEPIN_Digital(void)
 
                      /* Pull Enable: Internal pullup or pulldown resistor is not enabled on the corresponding pin. */
                      | PORT_PCR_PE(kPORT_PullDisable));
+
+    /* PORTE26 (pin 47) is configured as PTE26 */
+    PORT_SetPinMux(RTEPIN_DIGITAL_led_PORT, RTEPIN_DIGITAL_led_PIN, kPORT_MuxAsGpio);
 
     /* PORTE3 (pin 4) is configured as SDHC0_CMD */
     PORT_SetPinMux(RTEPIN_DIGITAL_SD_CMD_PORT, RTEPIN_DIGITAL_SD_CMD_PIN, kPORT_MuxAlt4);
