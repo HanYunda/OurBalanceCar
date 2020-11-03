@@ -133,27 +133,58 @@ void main(void)
     /** 菜单挂起 */
     MENU_Suspend();
     /** 初始化摄像头 */
-
+    //TODO: 在这里初始化摄像头
     /** 初始化IMU */
+    //TODO: 在这里初始化IMU（MPU6050）
     /** 菜单就绪 */
     MENU_Resume();
     /** 控制环初始化 */
+    //TODO: 在这里初始化控制环
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
-
-
-
 
     float f = arm_sin_f32(0.6f);
 
     while (true)
     {
-
+        //TODO: 在这里添加车模保护代码
     }
 }
 
 void MENU_DataSetUp(void)
 {
-    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
+        static int32_t testInt[8]={1,2,3,4,5,6,7,8};
+        static float testFloat[5]={32.03,3.14,9.65,11.54,15.36};
+        static menu_list_t *testList_1=MENU_ListConstruct("List_1",10,menu_menuRoot);
+        static menu_list_t *testList_2=MENU_ListConstruct("List_2",10,menu_menuRoot);
+        assert(testList_1);
+        assert(testList_2);
+        MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
+        MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,testList_1, "List_1", 0, 0));
+        MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,testList_2, "List_2", 0, 0));
+        //List_1
+        MENU_ListInsert(testList_1, MENU_ItemConstruct(nullType, NULL, "", 0, 0));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0],"testInt_1",10,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+1,"testInt_2",11,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+2,"testInt_3",12,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+3,"testInt_4",13,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+4,"testInt_5",14,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+5,"testInt_6",15,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+6,"testInt_7",16,menuItem_data_global));
+        MENU_ListInsert(testList_1,MENU_ItemConstruct(variType,&testInt[0]+7,"testInt_8",17,menuItem_data_global));
+        //List_2
+        MENU_ListInsert(testList_2, MENU_ItemConstruct(nullType, NULL, "test", 0, 0));
+        MENU_ListInsert(testList_2,MENU_ItemConstruct(varfType,&testFloat[0],"testFloat_1",0,menuItem_data_region));
+        MENU_ListInsert(testList_2,MENU_ItemConstruct(varfType,&testFloat[0]+1,"testFloat_2",1,menuItem_data_region));
+        MENU_ListInsert(testList_2,MENU_ItemConstruct(varfType,&testFloat[0]+2,"testFloat_3",2,menuItem_data_region));
+        MENU_ListInsert(testList_2,MENU_ItemConstruct(varfType,&testFloat[0]+3,"testFloat_4",3,menuItem_data_region));
+        MENU_ListInsert(testList_2,MENU_ItemConstruct(varfType,&testFloat[0]+4,"readOnly",0,menuItem_data_ROFlag | menuItem_data_NoSave | menuItem_data_NoLoad));
+        //TODO: 在这里添加子菜单和菜单项
 }
+
+void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
+{
+    //TODO: 补完本回调函数
+
+    //TODO: 添加图像处理（转向控制也可以写在这里）
 }
