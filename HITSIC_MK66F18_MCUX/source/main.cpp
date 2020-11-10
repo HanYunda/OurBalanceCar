@@ -49,7 +49,7 @@
 /** HITSIC_Module_DRV */
 #include "drv_ftfx_flash.hpp"
 #include "drv_disp_ssd1306.hpp"
-#include "drv_imu_invensense.hpp"
+//#include "drv_imu_invensense.hpp"
 #include "drv_dmadvp.hpp"
 #include "drv_cam_zf9v034.hpp"
 
@@ -84,6 +84,7 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 
 /** SCLIB_TEST */
 #include "sc_test.hpp"
+#include"ctrl_bal.h"
 
 
 void MENU_DataSetUp(void);
@@ -97,10 +98,11 @@ inv::i2cInterface_t imu_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlockin
 inv::mpu6050_t imu_6050(imu_i2c);
 
 disp_ssd1306_frameBuffer_t dispBuffer;
-graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
+//graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
 
 void main(void)
 {
+
     /** 初始化阶段，关闭总中断 */
     HAL_EnterCritical();
     /** 初始化时钟 */
@@ -130,7 +132,7 @@ void main(void)
     extInt_t::init();
     /** 初始化OLED屏幕 */
     DISP_SSD1306_Init();
-    DISP_SSD1306_spiDmaInit();
+    //DISP_SSD1306_spiDmaInit();
     extern const uint8_t DISP_image_100thAnniversary[8][128];
     //DISP_SSD1306_BufferUpload((uint8_t*) DISP_image_100thAnniversary);
     /** 初始化菜单 */
@@ -142,10 +144,27 @@ void main(void)
     /** 初始化摄像头 */
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
+    if (true != imu_6050.Detect())
+    {
+        PRINTF("IMU Detection Fail\n");
+        while(1);
+    }
+    if (0U != imu_6050.Init())
+    {
+        PRINTF("IMU Initialization Fail\n");
+        while(1);
+    }
+    if (0U != imu_6050.SelfTest()) ///> 自检时保持静止，否则会直接失败
+    {
+        PRINTF("IMU Self Test Fail\n");
+        //while(1);
+    }
     //TODO: 在这里初始化IMU（MPU6050）
     /** 菜单就绪 */
     MENU_Resume();
     /** 控制环初始化 */
+    ctrl_filterInit();
+    ctrl_init();
     //TODO: 在这里初始化控制环
     /** 初始化结束，开启总中断 */
     HAL_ExitCritical();
@@ -157,23 +176,22 @@ void main(void)
     //DISP_SSD1306_BufferUpload((uint8_t*) &dispBuffer);
 
     float f = arm_sin_f32(0.6f);
-
     while (true)
     {
+        //SendAngle();//给上位机发送三个角度值
         //TODO: 在这里添加车模保护代码
     }
 }
 
 void MENU_DataSetUp(void)
 {
-    MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
+    ctrl_menuBuild();
     //TODO: 在这里添加子菜单和菜单项
 }
 
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
 {
     //TODO: 补完本回调函数
-
     //TODO: 添加图像处理（转向控制也可以写在这里）
 }
 
