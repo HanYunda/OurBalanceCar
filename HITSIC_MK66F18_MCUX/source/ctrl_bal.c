@@ -6,7 +6,7 @@
  */
 #include"ctrl_bal.h"
 
-int standtime = 0;           //直立环执行次数
+
 float imu_accel[3]={0};      //从陀螺仪读取的加速度值
 float imu_palst[3]={0};      //从陀螺仪读取的角速度值
 float filterAngle=0.0f;      //滤波后的角度
@@ -27,7 +27,7 @@ float speed = 0.0f;
 float pwm_diff = 0.0f;
 float kp_midErr = 0.0f;
 
-int speedtime=0;             //速度环执行次数
+
 float smooth_speed=0.0f;
 float speed_set=0.0f;
 float get_speedl=0.0f;
@@ -106,11 +106,7 @@ float PID_CtrlCal(PID *_pid ,float set , float curr)
  */
 void ctrl_balanceContral(void)
 {
-    standtime++;
-    if(standtime==1)
-    {
-        angleSet = AngleSet;
-    }
+
     imu_6050.ReadSensorBlocking();
     imu_6050.Convert(&imu_accel[0], &imu_accel[1], &imu_accel[2], &imu_palst[0], &imu_palst[1], &imu_palst[2]);
     ctrl_filterUpdata(5U);
@@ -179,13 +175,13 @@ void ctrl_motorCtrl(float motorL,float motorR)
 void ctrl_dirContorl(void)
 {
     r_set = 1/(mid_err * kp_midErr);
-    w_set = (1 / r_set) * (speed / r_set);
+    w_set = (speed / r_set);
     pwm_diff = PID_CtrlCal(&dirPid,w_set,w_filter);
 }
 
 void ctrl_speedControl(void)
 {
-    speedtime++;
+
     get_speedl=SCFTM_GetSpeed(ENCO_L_PERIPHERAL);
     SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
     get_speedr=-SCFTM_GetSpeed(ENCO_R_PERIPHERAL);
@@ -193,10 +189,12 @@ void ctrl_speedControl(void)
     get_speed=(get_speedl+get_speedr)/2;
     speed_PIDOUTPUT=PID_CtrlCal(&speedPid,speed_set,get_speed);
     smoothavgfilter (100,10,speed_PIDOUTPUT);
-    if(speedtime>1)
+    if(get_speed == 0)
     {
-        angleSet=smooth_speed+angleSet;
+        angleSet = AngleSet;
     }
+    angleSet=smooth_speed+angleSet;
+
    // ctrl_balanceContral();=
 
 }
