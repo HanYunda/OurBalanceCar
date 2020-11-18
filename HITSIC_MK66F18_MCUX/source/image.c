@@ -426,7 +426,7 @@ void image_main()
         {
             IMG[i][mid_line[i]] = 0;//red;
         }
-        IMG[i][90] = 0;//red;自己添加，显示oled屏幕中间线
+        IMG[i][94] = 0;//red;自己添加，显示oled屏幕中间线
     }
 
 }

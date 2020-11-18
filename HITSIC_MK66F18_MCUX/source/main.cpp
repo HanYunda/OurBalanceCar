@@ -156,6 +156,7 @@ void main(void)
 
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
+
     cam_zf9v034_configPacket_t cameraCfg;
     CAM_ZF9V034_GetDefaultConfig(&cameraCfg);                                   //设置摄像头配置
     CAM_ZF9V034_CfgWrite(&cameraCfg);                                   //写入配置
@@ -184,7 +185,7 @@ void main(void)
              for (int j = 0; j < cameraCfg.imageCol; j += 2)
              {
                    int16_t dispCol = j >> 1;
-                   if (fullBuffer[i * cameraCfg.imageCol + j] > imageTH)
+                   if (IMG[i][j] > imageTH)//fullBuffer[i * cameraCfg.imageCol + j]
                    {
                         dispBuffer->SetPixelColor(dispCol, imageRow, 1);
                    }
