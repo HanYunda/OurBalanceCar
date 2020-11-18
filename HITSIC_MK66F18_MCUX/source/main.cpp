@@ -149,7 +149,7 @@ void main(void)
     CAM_ZF9V034_GetReceiverConfig(&dmadvpCfg, &cameraCfg);    //生成对应接收器的配置数据，使用此数据初始化接受器并接收图像数据。
     DMADVP_Init(DMADVP0, &dmadvpCfg);
     dmadvp_handle_t dmadvpHandle;
-    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_DmaCallback);
+    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_UnitTestDmaCallback);
     uint8_t *imageBuffer0 = new uint8_t[DMADVP0->imgSize];
     //uint8_t *imageBuffer1 = new uint8_t[DMADVP0->imgSize];
     uint8_t *fullBuffer = NULL;
@@ -157,7 +157,7 @@ void main(void)
     DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer0);
     //DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer1);
     DMADVP_TransferStart(DMADVP0, &dmadvpHandle);
-    //CAM_ZF9V034_UnitTest();
+    CAM_ZF9V034_UnitTest();
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
     //TODO: 在这里初始化IMU（MPU6050）
@@ -207,7 +207,18 @@ void MENU_DataSetUp(void)
 void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transferDone, uint32_t tcds)
 {
     //TODO: 补完本回调函数，双缓存采图。
-    DMADVP_EdmaCallbackService((dmadvp_handle_t*)userData, transferDone);
+    dmadvp_handle_t *dmadvpHandle = (dmadvp_handle_t*)userData;
+    status_t result = 0;
+
+    DMADVP_EdmaCallbackService(dmadvpHandle, transferDone);
+
+    result = DMADVP_TransferStart(dmadvpHandle->base, dmadvpHandle);
+    //PRINTF("new full buffer: 0x%-8.8x = 0x%-8.8x\n", handle->fullBuffer.front(), handle->xferCfg.destAddr);
+    if(kStatus_Success != result)
+    {
+        DMADVP_TransferStop(dmadvpHandle->base, dmadvpHandle);
+        PRINTF("transfer stop! insufficent buffer\n");
+    }
     //TODO: 添加图像处理（转向控制也可以写在这里）
     THRE();
     head_clear();
@@ -230,5 +241,4 @@ void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transfe
  *      中是十分危险的，可能造成车模进入“原地陀螺旋转”的状态，极易损坏车模或
  *      导致人员受伤。在设置电机占空比时务必做好异常保护。
  */
-
 

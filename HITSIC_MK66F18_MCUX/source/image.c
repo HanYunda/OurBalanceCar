@@ -424,9 +424,9 @@ void image_main()
     {
         if (mid_line[i] != MISS)
         {
-            IMG[i][mid_line[i]] = 0;//red;
+            IMG[i][mid_line[i]] = 255;//red;
         }
-        IMG[i][94] = 0;//red;自己添加，显示oled屏幕中间线
+        IMG[i][90] = 255;//red;自己添加，显示oled屏幕中间线
     }
 
 }
