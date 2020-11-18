@@ -1,4 +1,3 @@
-
 /*
  * ctrl_bal.c
  *
@@ -7,17 +6,19 @@
  */
 #include"ctrl_bal.h"
 
+int standtime = 0;           //直立环执行次数
 float imu_accel[3]={0};      //从陀螺仪读取的加速度值
 float imu_palst[3]={0};      //从陀螺仪读取的角速度值
 float filterAngle=0.0f;      //滤波后的角度
 float accelAngle=0.0f;       //由加速度计算出的角度值
 float palstAngle=0.0f;       //由角速度直接积分得出的角度
 float ininAngle=0.0f;        //滤波初始化时的角度
-float angleSet=21.35f;       //机械零点角度
+float AngleSet=21.35f;       //不变的机械零点
+float angleSet=0.0f;         //机械零点角度
 float angelOutput = 0.0f;    //pid计算后的输出值
 float limitPWMRear=90.0f;    //电机反转限幅
 float limitPWMFront=-90.0f;  //电机正转限幅
-float AngleSet=21.35f;
+
 float mid_err = 0.0f;
 float r_set = 0.0f;
 float w_set = 0.0f;
@@ -26,6 +27,7 @@ float speed = 0.0f;
 float pwm_diff = 0.0f;
 float kp_midErr = 0.0f;
 
+int speedtime=0;             //速度环执行次数
 float smooth_speed=0.0f;
 float speed_set=0.0f;
 float get_speedl=0.0f;
@@ -104,12 +106,18 @@ float PID_CtrlCal(PID *_pid ,float set , float curr)
  */
 void ctrl_balanceContral(void)
 {
+    standtime++;
+    if(standtime==1)
+    {
+        angleSet = AngleSet;
+    }
     imu_6050.ReadSensorBlocking();
     imu_6050.Convert(&imu_accel[0], &imu_accel[1], &imu_accel[2], &imu_palst[0], &imu_palst[1], &imu_palst[2]);
     ctrl_filterUpdata(5U);
     angelOutput = PID_CtrlCal(&balaPid,angleSet,filterAngle);
     angelOutput = angelOutput > limitPWMRear? limitPWMRear: angelOutput;
     angelOutput = angelOutput < limitPWMFront? limitPWMFront: angelOutput;
+    //ctrl_speedControl();
     ctrl_motorCtrl(angelOutput + pwm_diff,angelOutput - pwm_diff);
 }
 
@@ -177,6 +185,7 @@ void ctrl_dirContorl(void)
 
 void ctrl_speedControl(void)
 {
+    speedtime++;
     get_speedl=SCFTM_GetSpeed(ENCO_L_PERIPHERAL);
     SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
     get_speedr=-SCFTM_GetSpeed(ENCO_R_PERIPHERAL);
@@ -184,15 +193,18 @@ void ctrl_speedControl(void)
     get_speed=(get_speedl+get_speedr)/2;
     speed_PIDOUTPUT=PID_CtrlCal(&speedPid,speed_set,get_speed);
     smoothavgfilter (100,10,speed_PIDOUTPUT);
-    angleSet=smooth_speed+angleSet;
+    if(speedtime>1)
+    {
+        angleSet=smooth_speed+angleSet;
+    }
    // ctrl_balanceContral();=
 
 }
 float smoothavgfilter (float windowsize,float cycle,float data)
 {
-        int NUM;
+        int NUM;//
         NUM=((int)windowsize/cycle);
-        static float buf[NUM]={0};
+        float buf[NUM];
         static int index=0,flag=0;
         static float sum=0.0f;
         // 替换之前位置上的数据
@@ -236,7 +248,7 @@ void SendData(void)
  */
 void ctrl_menuBuild(void)
 {
-            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",20,menu_menuRoot);
+            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",30,menu_menuRoot);
             assert(ctrlList_1);
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,ctrlList_1, "ctrlList_1", 0, 0));
@@ -246,19 +258,20 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kd,"balakd",11,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.ki,"balaki",12,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&angleSet,"angleSet",13,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&AngleSet,"AngleSet",14,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&filterAngle,"filterAngle",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMRear,"limPWMRear",14,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMFront,"limPWMFrot",15,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kp,"dirkp",16,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.ki,"dirki",17,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kd,"dirkd",18,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.kp,"speedkp",19,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.ki,"speedki",20,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.kd,"speedkd",21,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&kp_midErr,"midErrkp",22,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",23,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",24,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",25,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",26,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMRear,"limPWMRear",15,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMFront,"limPWMFrot",16,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kp,"dirkp",17,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.ki,"dirki",18,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kd,"dirkd",19,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.kp,"speedkp",20,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.ki,"speedki",21,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.kd,"speedkd",22,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&kp_midErr,"midErrkp",23,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",24,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",25,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",26,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",27,menuItem_data_global));
             //TODO: 在这里添加子菜单和菜单项
 }
