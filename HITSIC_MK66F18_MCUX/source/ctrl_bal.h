@@ -27,6 +27,7 @@
 #define ctrl_angToRad(x)     (x * (ctrl_pi/ 180.0f))
 #define ctrl_radToAng(x)     (x * (180.0f / ctrl_pi))
 #define update_Time_ms 5U
+#define encoderTrs   (50.0f/6200.0f)
 
 typedef struct balance_pidData
 {
