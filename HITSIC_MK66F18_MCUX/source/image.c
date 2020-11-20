@@ -60,7 +60,7 @@ void THRE()
         for (int j = 0; j < 188; j++)
         {
             if ((*map) > threshold)
-                (*my_map) = 255;
+                (*my_map) = 255;//255;
             else (*my_map) = 0;
             map++;
             my_map++;
@@ -424,9 +424,9 @@ void image_main()
     {
         if (mid_line[i] != MISS)
         {
-            IMG[i][mid_line[i]] = 0;//red;
+            IMG[i][mid_line[i]] = black;//red;
         }
-        IMG[i][94] = 0;//red;自己添加，显示oled屏幕中间线
+        IMG[i][93] = black;//red;自己添加，显示oled屏幕中间线
     }
 
 }
