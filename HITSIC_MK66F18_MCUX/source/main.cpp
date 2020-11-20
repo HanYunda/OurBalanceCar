@@ -107,7 +107,7 @@ graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);//用
 void main(void)
 {
     /** 初始化阶段，关闭总中断 */
-    HAL_EnterCritical();
+     HAL_EnterCritical();
 
     /** BSP（板级支持包）初始化 */
     RTECLK_HsRun_180MHz();
@@ -143,6 +143,7 @@ void main(void)
     MENU_Suspend();
     /** 初始化摄像头 */
     //CAM_ZF9V034_UnitTest();
+
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
     //TODO: 在这里初始化IMU（MPU6050）
@@ -156,7 +157,6 @@ void main(void)
 
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
-
     cam_zf9v034_configPacket_t cameraCfg;
     CAM_ZF9V034_GetDefaultConfig(&cameraCfg);                                   //设置摄像头配置
     CAM_ZF9V034_CfgWrite(&cameraCfg);                                   //写入配置
@@ -164,18 +164,18 @@ void main(void)
     CAM_ZF9V034_GetReceiverConfig(&dmadvpCfg, &cameraCfg);    //生成对应接收器的配置数据，使用此数据初始化接受器并接收图像数据。
     DMADVP_Init(DMADVP0, &dmadvpCfg);
     dmadvp_handle_t dmadvpHandle;
-    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_DmaCallback);
+    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_DmaCallback);//CAM_ZF9V034_DmaCallback
     uint8_t *imageBuffer0 = new uint8_t[DMADVP0->imgSize];
     //uint8_t *imageBuffer1 = new uint8_t[DMADVP0->imgSize];
-    uint8_t *fullBuffer = NULL;
+    //uint8_t *fullBuffer = NULL;     //之前没有注释掉，总花屏
     disp_ssd1306_frameBuffer_t *dispBuffer = new disp_ssd1306_frameBuffer_t;
     DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer0);
     //DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer1);
     DMADVP_TransferStart(DMADVP0, &dmadvpHandle);
+
     while (true)
     {
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
-        //SCHOST_ImgUpload(fullBuffer,120,188);//fullBuffer是二维数组
         dispBuffer->Clear();
         const uint8_t imageTH = 160;
         for (int i = 0; i < cameraCfg.imageRow; i += 2)
@@ -185,13 +185,15 @@ void main(void)
              for (int j = 0; j < cameraCfg.imageCol; j += 2)
              {
                    int16_t dispCol = j >> 1;
-                   if (IMG[i][j] > imageTH)//fullBuffer[i * cameraCfg.imageCol + j]
+                   if (IMG[i][j]> imageTH)//IMG[i][j]
                    {
                         dispBuffer->SetPixelColor(dispCol, imageRow, 1);
                    }
               }
         }
-        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+        //SCHOST_ImgUpload(fullBuffer,120,188);//fullBuffer是二维数组,这里是列指针，直接输IMG不行  &IMG[0][0]
+        //SCHOST_ImgUpload(&IMG[0][0],120,188);
+        DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);//dispBuffer
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
         //TODO: 在这里添加车模保护代码
@@ -214,14 +216,14 @@ void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transfe
 
     result = DMADVP_TransferStart(dmadvpHandle->base, dmadvpHandle);
     //PRINTF("new full buffer: 0x%-8.8x = 0x%-8.8x\n", handle->fullBuffer.front(), handle->xferCfg.destAddr);
-    if(kStatus_Success != result)
+    /*if(kStatus_Success != result)
     {
         DMADVP_TransferStop(dmadvpHandle->base, dmadvpHandle);
         PRINTF("transfer stop! insufficent buffer\n");
-    }
+    }*/
     //TODO: 添加图像处理（转向控制也可以写在这里）
     THRE();
-    head_clear();
+    //head_clear();
     image_main();
 }
 
