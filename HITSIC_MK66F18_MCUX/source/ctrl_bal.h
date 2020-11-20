@@ -44,7 +44,7 @@ void ctrl_balanceContral(void);
 void ctrl_dirContorl(void);
 void ctrl_speedControl(void);
 void ctrl_init(void);
-void SendAngle(void);
+void SendData(void);
 void ctrl_motorCtrl(float motorL,float motorR);
 
 float smoothavgfilter (float windowsize,float cycle,float data);

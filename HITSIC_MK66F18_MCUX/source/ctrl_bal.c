@@ -113,7 +113,6 @@ void ctrl_balanceContral(void)
     angelOutput = PID_CtrlCal(&balaPid,angleSet,filterAngle);
     angelOutput = angelOutput > limitPWMRear? limitPWMRear: angelOutput;
     angelOutput = angelOutput < limitPWMFront? limitPWMFront: angelOutput;
-    //ctrl_speedControl();
     ctrl_motorCtrl(angelOutput + pwm_diff,angelOutput - pwm_diff);
 }
 
@@ -176,7 +175,7 @@ void ctrl_dirContorl(void)
 {
     r_set = 1/(mid_err * kp_midErr);
     w_set = (get_speed / r_set);
-    w_filter = imu_palst[2];
+    w_filter = imu_palst[0];
     pwm_diff = PID_CtrlCal(&dirPid,w_set,w_filter);
 }
 
@@ -189,17 +188,7 @@ void ctrl_speedControl(void)
     get_speed=(get_speedl+get_speedr)/2;
     speed_PIDOUTPUT=PID_CtrlCal(&speedPid,speed_set,get_speed);
     smoothavgfilter (200,20,speed_PIDOUTPUT);
-    /*if(get_speed == 0)
-    {
-        angleSet = AngleSet;
-    }
-    else
-    {
-        angleSet=AngleSet+speed_PIDOUTPUT;
-    }*/
     angleSet=AngleSet+smooth_speed;//修改这里的angleSet解决了一直以来的问题
-   // ctrl_balanceContral();
-
 }
 float smoothavgfilter (float windowsize,float cycle,float data)
 {
@@ -237,7 +226,7 @@ float smoothavgfilter (float windowsize,float cycle,float data)
  */
 void SendData(void)
 {
-    float data[3]={get_speedl,get_speedr,get_speed};
+    float data[3]={speed_set,get_speed,w_filter};
     SCHOST_VarUpload(data,3);
 }
 
@@ -261,7 +250,7 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&angleSet,"angleSet",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&AngleSet,"AngleSet",13,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&filterAngle,"filterAngle",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&w_set,"W",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&w_filter,"W",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMRear,"limPWMRear",14,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMFront,"limPWMFrot",15,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kp,"dirkp",16,menuItem_data_global));

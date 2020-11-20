@@ -178,7 +178,7 @@ void main(void)
     float f = arm_sin_f32(0.6f);
     while (true)
     {
-        //SendAngle();//给上位机发送三个角度值
+        SendData();//给上位机发送三个角度值
         //TODO: 在这里添加车模保护代码
     }
 }
