@@ -35,6 +35,7 @@ float get_speedl=0.0f;
 float get_speedr=0.0f;
 float get_speed=0.0f;
 float speed_PIDOUTPUT=0.0f;
+extern uint8_t mid_line[CAMERA_H];
 
 PID balaPid = {0.0f,0.0f,0.0f};
 PID dirPid = {0.0f,0.0f,0.0f};
@@ -174,6 +175,7 @@ void ctrl_motorCtrl(float motorL,float motorR)
 
 void ctrl_dirContorl(void)
 {
+    mid_err=(float)(mid_line[60]-93);
     divide_rSet = mid_err * kp_midErr;
     w_set = get_speed *divide_rSet;
     w_filter = ctrl_angToRad(imu_palst[0]);//这里直接读取的是度/s需要转换成弧度/s
@@ -228,8 +230,8 @@ float smoothavgfilter (float data)
  */
 void SendData(void)
 {
-    float data[3]={speed_set,get_speed,w_filter};
-    SCHOST_VarUpload(data,3);
+    float data[4]={mid_err,w_filter,w_set,1/divide_rSet};
+    SCHOST_VarUpload(data,4);
 }
 
 
@@ -263,9 +265,9 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.ki,"speedki",20,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speedPid.kd,"speedkd",21,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&kp_midErr,"midErrkp",22,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",23,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",24,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",25,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",26,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             //TODO: 在这里添加子菜单和菜单项
 }

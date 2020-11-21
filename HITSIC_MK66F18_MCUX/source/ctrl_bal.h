@@ -20,6 +20,7 @@
 #include "app_menu.hpp"
 #include "sc_ftm.h"
 #include "sc_host.h"
+#include "image.h"
 
 #define ctrl_pi  3.1415926f
 #define accelOfGrv  9.8f     //重力加速度
