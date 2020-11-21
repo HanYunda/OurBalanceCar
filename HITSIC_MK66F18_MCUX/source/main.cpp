@@ -98,7 +98,7 @@ inv::i2cInterface_t imu_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlockin
 inv::mpu6050_t imu_6050(imu_i2c);
 
 disp_ssd1306_frameBuffer_t dispBuffer;
-//graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
+graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);
 
 void main(void)
 {

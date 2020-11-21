@@ -16,11 +16,12 @@ float ininAngle=0.0f;        //滤波初始化时的角度
 float AngleSet=21.35f;       //不变的机械零点
 float angleSet=0.0f;         //机械零点角度
 float angelOutput = 0.0f;    //pid计算后的输出值
-float limitPWMRear=90.0f;    //电机反转限幅
-float limitPWMFront=-90.0f;  //电机正转限幅
+float limitPWMRear=50.0f;    //电机反转限幅
+float limitPWMFront=-50.0f;  //电机正转限幅
+float limitTurPwm=5.0f;     ////转向环输出限幅
 
 float mid_err = 0.0f;
-float r_set = 0.0f;
+float divide_rSet = 0.0f;
 float w_set = 0.0f;
 float w_filter = 0.0f;
 float speed = 0.0f;
@@ -173,10 +174,12 @@ void ctrl_motorCtrl(float motorL,float motorR)
 
 void ctrl_dirContorl(void)
 {
-    r_set = 1/(mid_err * kp_midErr);
-    w_set = (get_speed / r_set);
-    w_filter = imu_palst[0];
+    divide_rSet = mid_err * kp_midErr;
+    w_set = get_speed *divide_rSet;
+    w_filter = ctrl_angToRad(imu_palst[0]);//这里直接读取的是度/s需要转换成弧度/s
     pwm_diff = PID_CtrlCal(&dirPid,w_set,w_filter);
+    pwm_diff = pwm_diff > limitTurPwm? limitTurPwm: pwm_diff;
+    pwm_diff = pwm_diff < -limitTurPwm? -limitTurPwm: pwm_diff;
 }
 
 void ctrl_speedControl(void)
@@ -185,12 +188,12 @@ void ctrl_speedControl(void)
     SCFTM_ClearSpeed(ENCO_L_PERIPHERAL);
     get_speedr=-((float)SCFTM_GetSpeed(ENCO_R_PERIPHERAL))*encoderTrs;
     SCFTM_ClearSpeed(ENCO_R_PERIPHERAL);
-    get_speed=(get_speedl+get_speedr)/2;
+    get_speed=(get_speedl+get_speedr)/2.0f;
     speed_PIDOUTPUT=PID_CtrlCal(&speedPid,speed_set,get_speed);
-    smoothavgfilter (200,20,speed_PIDOUTPUT);
+    smoothavgfilter (speed_PIDOUTPUT);
     angleSet=AngleSet+smooth_speed;//修改这里的angleSet解决了一直以来的问题
 }
-float smoothavgfilter (float windowsize,float cycle,float data)
+float smoothavgfilter (float data)
 {
         int NUM=10;//平滑滤波个数
         //NUM=((int)windowsize/cycle);
@@ -206,7 +209,6 @@ float smoothavgfilter (float windowsize,float cycle,float data)
             index = 0;
             flag = 1;
         }
-
         // 如果没有充满缓存区，有几个就取几个的平均
         if(flag==0)
         { smooth_speed=sum/index;
@@ -238,7 +240,7 @@ void SendData(void)
  */
 void ctrl_menuBuild(void)
 {
-            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",30,menu_menuRoot);
+            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",25,menu_menuRoot);
             assert(ctrlList_1);
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,ctrlList_1, "ctrlList_1", 0, 0));
@@ -253,6 +255,7 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&w_filter,"W",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMRear,"limPWMRear",14,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMFront,"limPWMFrot",15,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitTurPwm,"limTurPwm",1,menuItem_data_region));//转弯差速限幅
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kp,"dirkp",16,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.ki,"dirki",17,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&dirPid.kd,"dirkd",18,menuItem_data_global));

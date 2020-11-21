@@ -47,7 +47,7 @@ void ctrl_init(void);
 void SendData(void);
 void ctrl_motorCtrl(float motorL,float motorR);
 
-float smoothavgfilter (float windowsize,float cycle,float data);
+float smoothavgfilter (float data);
 void ctrl_menuBuild(void);
 float PID_CtrlCal(PID *_pid ,float set , float curr);
 
