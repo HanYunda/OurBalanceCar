@@ -49,6 +49,10 @@ uint8_t find_continue(uint8_t i_start, uint8_t j_start);
 void ordinary_two_line(void);
 void image_main();
 void get_mid_line(void);
+int Zebra_Cross();
+void Sec_Zbr();
+void Protect(void);
+void SendimageData(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
 #endif /* IMAGE_H_ */

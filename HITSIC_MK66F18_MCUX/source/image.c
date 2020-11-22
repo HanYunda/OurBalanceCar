@@ -5,7 +5,7 @@
  *      Author: MECHREVO
  */
 #include "image.h"
-
+#include "ctrl_bal.h"
 int f[10 * CAMERA_H];//考察连通域联通性
 //每个白条子属性
 typedef struct {
@@ -41,8 +41,14 @@ uint8_t mid_line[CAMERA_H];
 int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
 uint8_t threshold = 160;//阈值
+
+uint8_t foresee = 60;
+
 uint8_t* fullBuffer;//指向灰度图的首地址//这是我在这里新定义的，之前显示未定义
 extern float mid_err;
+int sign = 0;
+int times = 0;
+int mark = 0;
 
 ////////////////////////////////////////////
 //功能：二值化
@@ -143,7 +149,7 @@ void search_white_range()
         }
         white_range[i].num = tnum;
     }
-}
+ }
 
 ////////////////////////////////////////////
 //功能：寻找白条子连通性，将全部联通白条子的节点编号刷成最古老祖先的节点编号
@@ -169,7 +175,8 @@ void find_all_connect()
     for (int i = NEAR_LINE; i > FAR_LINE; i--)//因为每两行每两行比较 所以循环到FAR_LINE+1
     {
         u_num = white_range[i - 1].num;
-        d_num = white_range[i].num;
+\
+d_num = white_range[i].num;
         u_white = &white_range[i - 1];
         d_white = &white_range[i];
         i_u = 1; i_d = 1;
@@ -394,6 +401,7 @@ void my_memset(uint8_t* ptr, uint8_t num, uint8_t size)
 ///////////////////////////////////////////
 void get_mid_line(void)
 {
+    //Zebra_Cross();
     my_memset(mid_line, MISS, CAMERA_H);
     for(int i = NEAR_LINE;i >= FAR_LINE;i--)
         if (left_line[i] != MISS)
@@ -404,7 +412,6 @@ void get_mid_line(void)
         {
             mid_line[i] = MISS;
         }
-
 }
 ////////////////////////////////////////////
 //功能：图像处理主程序
@@ -421,6 +428,7 @@ void image_main()
     /*到此处为止，我们已经得到了属于赛道的结构体数组my_road[CAMERA_H]*/
     ordinary_two_line();
     get_mid_line();
+    Sec_Zbr();
 
     for (int i = NEAR_LINE; i >= FAR_LINE; i--)
     {
@@ -430,11 +438,113 @@ void image_main()
             //mid_err=mid_line[i]-93;
         }
         IMG[i][93] = black;//red;自己添加，显示oled屏幕中间线
-        //mid_sum+=mid_line[i]-93.0f;
     }
-    mid_err=60;//(float)(mid_line[60]-93);
+    mid_err=mid_line[60]-93;
 
 }
+////////////////////////////////////////////
+//功能：识别斑马线
+//输入：
+//输出：
+//备注：
+///////////////////////////////////////////
+int Zebra_Cross()
+{
+    int zebra_width = 0;
+    for (uint8_t i = 10; i <= 80; i++)
+        {
+            if (my_road[i].white_num > 7)
+            {
+               zebra_width++;
+            }
+        }
+    if(zebra_width > 7)
+    {
+
+        //SDK_DelayAtLeastUs(5000000, 180000000);
+        //Stop();
+        return 1;
+    }
+    else
+        return 0;
 
 
 
+    /*int number = 0;
+    int black_sign = 0;
+
+    for(int i = 100;i < 105 ; i++)
+    {
+        for(int j = 0 ; j < 188 ; j++)
+        {
+            if((IMG[i][j] == black && IMG[i][j+1] == white) || (IMG[i][j] == white && IMG[i][j+1] == black))
+            {
+                number++;
+            }
+        }
+        for(int j = 90; j < 100 ; j++)
+        {
+            if(IMG[i][j] == black)
+            {
+                black_sign++;
+            }
+        }
+    }
+    if(number >= 50)
+    {
+        mid_line[35]=93;
+        return 1;
+    }
+    else if(black_sign <= 4)
+    {
+        return 0;
+    }
+    else
+        return 0;*/
+}
+////////////////////////////////////////////
+//功能：识别二次过斑马线
+//输入：
+//输出：
+//备注：
+///////////////////////////////////////////
+void Sec_Zbr()
+{
+    mark = Zebra_Cross();
+    if(times==0 && mark)
+    {
+        sign = 1;
+        for(int i=60; i < 119 ; i++)
+       {
+            mid_line[i] = 93;
+       }
+    }
+    if(sign==1&&!mark)
+    {
+        sign=2;
+        times = 1;
+
+    }
+    if(sign==2&&mark)
+    {
+        sign=3;
+        for(int i=60; i < 119 ; i++)
+        {
+            mid_line[i] = 93;
+        }
+    }
+    if(sign==3&&!mark)
+    {
+        sign=4;
+    }
+    if(sign==4)
+    {
+        Stop();
+    }
+}
+
+void SendimageData(void)
+{
+    float data[3]={sign,times,mark};
+    SCHOST_VarUpload(data,3);
+}

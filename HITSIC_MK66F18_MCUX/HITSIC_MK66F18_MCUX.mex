@@ -15,7 +15,7 @@
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
    </preferences>
    <tools>
-      <pins name="Pins" version="8.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="8.0" enabled="true" update_project_code="false">
          <generated_project_files>
             <file path="board/pin_mux.c" update_enabled="true"/>
             <file path="board/pin_mux.h" update_enabled="true"/>
@@ -208,7 +208,7 @@
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
-      <periphs name="Peripherals" version="8.0" enabled="true" update_project_code="true">
+      <periphs name="Peripherals" version="8.0" enabled="true" update_project_code="false">
          <dependencies>
             <dependency resourceType="SWComponent" resourceId="platform.drivers.edma" description="工具链/IDE工程中未找到EDMA Driver。工程不会被编译！" problem_level="2" source="Peripherals">
                <feature name="enabled" evaluation="equal">

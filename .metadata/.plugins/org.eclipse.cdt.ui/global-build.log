@@ -1,0 +1,128 @@
+21:10:11 **** Incremental Build of configuration Debug for project HITSIC_MK66F18_MCUX ****
+make -r -j all 
+Building file: ../source/main.cpp
+Invoking: MCU C++ Compiler
+arm-none-eabi-c++ -std=c++17 -DCPU_MK66FX1M0VLQ18 -DCPU_MK66FX1M0VLQ18_cm4 -DFSL_RTOS_BM -DSDK_OS_BAREMETAL -DSDK_DEBUGCONSOLE=1 -DSERIAL_PORT_TYPE_UART=1 -DSERIAL_PORT_TYPE_SWO=0 -DDEBUG_CONSOLE_RX_ENABLE=0 -D__MCUXPRESSO -D__USE_CMSIS -DDEBUG -D__NEWLIB__ -DI2C_RETRY_TIMES=32768 -DUART_RETRY_TIMES=32768 -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\board" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\component\lists" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\component\uart" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\component\osa" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\component\serial_manager" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\CMSIS" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\device" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\drivers" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\fatfs\source" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\fatfs\source\fsl_ram_disk" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\fatfs\source\fsl_sd_disk" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\sdmmc\host" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\sdmmc\inc" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\sdmmc\osa" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\source" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\utilities" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities\extlib\CmBacktrace-1.4.0\cm_backtrace" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities\extlib\EasyFlash-4.0.0\easyflash\inc" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities\extlib\EasyFlash-4.0.0\easyflash\plugins\types\struct2json\inc" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace" -I"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\EasyFlash-4.0.0\easyflash\port" -O0 -fno-common -g3 -Wall -c -ffunction-sections -fdata-sections -ffreestanding -fno-builtin -frtti -fexceptions -fpermissive -fmerge-constants -fmacro-prefix-map="../source/"=. -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -D__NEWLIB__ -fstack-usage -MMD -MP -MF"source/main.d" -MT"source/main.o" -MT"source/main.d" -o "source/main.o" "../source/main.cpp"
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/app_menu_def.hpp:13,
+                 from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/app_menu_button.hpp:4,
+                 from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/app_menu.hpp:34,
+                 from ../source/main.cpp:67:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18/app_menu_port.hpp:123:1: warning: multi-line comment [-Wcomment]
+  123 | // #define HITSIC_MENU_DISPLAY_PRINTF(row,col,fmt,...)  \
+      | ^
+In file included from ../source/main.cpp:54:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/drv_cam_zf9v034.hpp:67:8: warning: attribute ignored in declaration of 'struct cam_zf9v034_configPacket_t' [-Wattributes]
+   67 | struct cam_zf9v034_configPacket_t
+      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/drv_cam_zf9v034.hpp:67:8: note: attribute for 'struct cam_zf9v034_configPacket_t' must follow the 'struct' keyword
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities\extlib\CmBacktrace-1.4.0\cm_backtrace/cm_backtrace.h:32,
+                 from ../source/main.cpp:60:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h: In function 'uint32_t cmb_get_msp()':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h:350:27: warning: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+  350 |         register uint32_t result;
+      |                           ^~~~~~
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h: In function 'uint32_t cmb_get_psp()':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h:355:27: warning: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+  355 |         register uint32_t result;
+      |                           ^~~~~~
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h: In function 'uint32_t cmb_get_sp()':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18\extlib_port\CmBacktrace-1.4.0\cm_backtrace/cmb_def.h:360:27: warning: ISO C++17 does not allow 'register' storage class specifier [-Wregister]
+  360 |         register uint32_t result;
+      |                           ^~~~~~
+In file included from ../source/main.cpp:79:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_cam_zf9v034_test.hpp: In function 'void CAM_ZF9V034_UnitTest()':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_cam_zf9v034_test.hpp:68:17: warning: unused variable 'dispRow' [-Wunused-variable]
+   68 |         int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+      |                 ^~~~~~~
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_cam_zf9v034_test.hpp:68:47: warning: unused variable 'dispShift' [-Wunused-variable]
+   68 |         int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+      |                                               ^~~~~~~~~
+In file included from ../source/main.cpp:81:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp: At global scope:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp:9:60: warning: invalid conversion from 'int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int)' {aka 'int (*)(void*, unsigned char, unsigned char, unsigned char*, unsigned int)'} to 'int (*)(void*, uint8_t, uint8_t, const uint8_t*, unsigned int)' {aka 'int (*)(void*, unsigned char, unsigned char, const unsigned char*, unsigned int)'} [-fpermissive]
+    9 | inv::i2cInterface_t my_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlocking);
+      |                                                            ^~~~~~~~~~~~~~~~~~~~~
+      |                                                            |
+      |                                                            int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int) {aka int (*)(void*, unsigned char, unsigned char, unsigned char*, unsigned int)}
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp:4,
+                 from ../source/main.cpp:81:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/drv_imu_invensense.hpp:128:30: note:   initializing argument 3 of 'inv::i2cInterface_t::i2cInterface_t(void*, int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int), int (*)(void*, uint8_t, uint8_t, const uint8_t*, unsigned int))'
+  128 |                        int (*_writeBlocking)(void *context,
+      |                        ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  129 |                                              uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len)):
+      |                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from ../source/main.cpp:81:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp: In function 'int32_t inv::IMU_UnitTest_AutoDetect()':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp:24:11: warning: unused variable 'temp' [-Wunused-variable]
+   24 |     float temp = 0;
+      |           ^~~~
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp: In function 'void inv::IMU_UnitTest_AutoRefreshPitTask(void*)':
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp:130:9: warning: unused variable 'res' [-Wunused-variable]
+  130 |     int res = imu_unitTest_imu->ReadSensorBlocking();
+      |         ^~~
+In file included from ../source/main.cpp:86:
+../source/sc_test.hpp: In function 'void sc::SC_UnitTest_AutoRefreshAddMenu(menu_list_t*)':
+../source/sc_test.hpp:106:46: warning: invalid conversion from 'void (*)(menu_keyOp_t*)' {aka 'void (*)(long unsigned int*)'} to 'void*' [-fpermissive]
+  106 |                 MENU_ItemConstruct(procType, SC_UnitTest_FtmUpdateMenuHandler, "PWM Update", 0, menuItem_proc_runOnce));
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                              |
+      |                                              void (*)(menu_keyOp_t*) {aka void (*)(long unsigned int*)}
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/app_menu.hpp:37,
+                 from ../source/main.cpp:67:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/app_menu_type.hpp:159:66: note:   initializing argument 2 of 'menu_itemIfce_t* MENU_ItemConstruct(menu_itemType_t, void*, const char*, uint32_t, uint32_t)'
+  159 | menu_itemIfce_t* MENU_ItemConstruct(menu_itemType_t _type, void *_data,
+      |                                                            ~~~~~~^~~~~
+In file included from ../source/main.cpp:86:
+../source/sc_test.hpp: In function 'void sc::SC_UnitTest_AutoRefresh()':
+../source/sc_test.hpp:115:35: warning: invalid conversion from 'void (*)()' to 'pitMgr_t::handler_t' {aka 'void (*)(void*)'} [-fpermissive]
+  115 |     pitMgr_t::insert(64U, 3U, sc::SC_UnitTest_AdcRefreshPitTask, pitMgr_t::enable);
+      |                               ~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                   |
+      |                                   void (*)()
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\d_mk66f18/drv_disp_ssd1306_port.hpp:30,
+                 from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/drv_disp_ssd1306.hpp:37,
+                 from ../source/main.cpp:51:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/sys_pitmgr.hpp:78:65: note:   initializing argument 3 of 'static pitMgr_t* pitMgr_t::insert(uint32_t, uint32_t, pitMgr_t::handler_t, uint32_t)'
+   78 |  static pitMgr_t* insert(uint32_t _ms, uint32_t _mso, handler_t _handler,
+      |                                                       ~~~~~~~~~~^~~~~~~~
+../source/main.cpp: At global scope:
+../source/main.cpp:104:61: warning: invalid conversion from 'int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int)' {aka 'int (*)(void*, unsigned char, unsigned char, unsigned char*, unsigned int)'} to 'int (*)(void*, uint8_t, uint8_t, const uint8_t*, unsigned int)' {aka 'int (*)(void*, unsigned char, unsigned char, const unsigned char*, unsigned int)'} [-fpermissive]
+  104 | inv::i2cInterface_t imu_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlocking);
+      |                                                             ^~~~~~~~~~~~~~~~~~~~~
+      |                                                             |
+      |                                                             int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int) {aka int (*)(void*, unsigned char, unsigned char, unsigned char*, unsigned int)}
+In file included from D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities_test/drv_imu_invensense_test.hpp:4,
+                 from ../source/main.cpp:81:
+D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\HITSIC_Module\utilities/drv_imu_invensense.hpp:128:30: note:   initializing argument 3 of 'inv::i2cInterface_t::i2cInterface_t(void*, int (*)(void*, uint8_t, uint8_t, uint8_t*, unsigned int), int (*)(void*, uint8_t, uint8_t, const uint8_t*, unsigned int))'
+  128 |                        int (*_writeBlocking)(void *context,
+      |                        ~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  129 |                                              uint8_t addr, uint8_t reg, const uint8_t *val, unsigned int len)):
+      |                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../source/main.cpp: In function 'void main()':
+../source/main.cpp:210:22: warning: unused variable 'dispRow' [-Wunused-variable]
+  210 |              int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+      |                      ^~~~~~~
+../source/main.cpp:210:52: warning: unused variable 'dispShift' [-Wunused-variable]
+  210 |              int16_t dispRow = (imageRow / 8) + 1, dispShift = (imageRow % 8);
+      |                                                    ^~~~~~~~~
+../source/main.cpp:200:11: warning: unused variable 'f' [-Wunused-variable]
+  200 |     float f = arm_sin_f32(0.6f);
+      |           ^
+Finished building: ../source/main.cpp
+ 
+Building target: HITSIC_MK66F18_MCUX.axf
+Invoking: MCU C++ Linker
+arm-none-eabi-c++ -nostdlib -L"D:\FORK\OurBalanceCar\HITSIC_MK66F18_MCUX\libs" -Xlinker -Map="HITSIC_MK66F18_MCUX.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -Xlinker --sort-section=alignment -Xlinker --cref -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -T "HITSIC_MK66F18_MCUX_Debug.ld" -o "HITSIC_MK66F18_MCUX.axf"  ./utilities/fsl_assert.o ./utilities/fsl_debug_console.o ./utilities/fsl_shell.o ./utilities/fsl_str.o  ./startup/startup_mk66f18.o  ./source/ctrl_bal.o ./source/image.o ./source/isr.o ./source/main.o ./source/sc_adc.o ./source/sc_ftm.o ./source/sc_host.o ./source/syscalls.o  ./sdmmc/src/fsl_sd.o ./sdmmc/src/fsl_sdmmc_common.o  ./sdmmc/osa/fsl_sdmmc_osa.o  ./sdmmc/host/fsl_sdmmc_host.o  ./fatfs/source/fsl_sd_disk/fsl_sd_disk.o  ./fatfs/source/fsl_ram_disk/fsl_ram_disk.o  ./fatfs/source/diskio.o ./fatfs/source/ff.o ./fatfs/source/ffsystem.o ./fatfs/source/ffunicode.o  ./drivers/fsl_adc16.o ./drivers/fsl_cache.o ./drivers/fsl_clock.o ./drivers/fsl_cmp.o ./drivers/fsl_cmt.o ./drivers/fsl_common.o ./drivers/fsl_crc.o ./drivers/fsl_dac.o ./drivers/fsl_dmamux.o ./drivers/fsl_dspi.o ./drivers/fsl_dspi_edma.o ./drivers/fsl_edma.o ./drivers/fsl_enet.o ./drivers/fsl_ewm.o ./drivers/fsl_flexbus.o ./drivers/fsl_flexcan.o ./drivers/fsl_ftfx_cache.o ./drivers/fsl_ftfx_controller.o ./drivers/fsl_ftfx_flash.o ./drivers/fsl_ftfx_flexnvm.o ./drivers/fsl_ftm.o ./drivers/fsl_gpio.o ./drivers/fsl_i2c.o ./drivers/fsl_i2c_edma.o ./drivers/fsl_llwu.o ./drivers/fsl_lmem_cache.o ./drivers/fsl_lptmr.o ./drivers/fsl_lpuart.o ./drivers/fsl_lpuart_edma.o ./drivers/fsl_pdb.o ./drivers/fsl_pit.o ./drivers/fsl_pmc.o ./drivers/fsl_rcm.o ./drivers/fsl_rnga.o ./drivers/fsl_rtc.o ./drivers/fsl_sai.o ./drivers/fsl_sai_edma.o ./drivers/fsl_sdhc.o ./drivers/fsl_sdramc.o ./drivers/fsl_sim.o ./drivers/fsl_smc.o ./drivers/fsl_sysmpu.o ./drivers/fsl_tpm.o ./drivers/fsl_tsi_v4.o ./drivers/fsl_uart.o ./drivers/fsl_uart_edma.o ./drivers/fsl_vref.o ./drivers/fsl_wdog.o  ./device/system_MK66F18.o  ./component/uart/lpuart_adapter.o  ./component/serial_manager/serial_manager.o ./component/serial_manager/serial_port_uart.o  ./component/osa/fsl_os_abstraction_bm.o  ./component/lists/generic_list.o  ./board/board.o ./board/clock_config.o ./board/peripherals.o ./board/pin_mux.o ./board/sdmmc_config.o  ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/easyflash.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_env.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_env_legacy.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_env_legacy_wl.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_iap.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_log.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/src/ef_utils.o  ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/plugins/types/struct2json/src/cJSON.o ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/plugins/types/struct2json/src/s2j.o  ./HITSIC_Module/utilities/extlib/EasyFlash-4.0.0/easyflash/plugins/types/ef_types.o  ./HITSIC_Module/utilities/extlib/CmBacktrace-1.4.0/cm_backtrace/fault_handler/gcc/cmb_fault.o  ./HITSIC_Module/utilities/extlib/CmBacktrace-1.4.0/cm_backtrace/cm_backtrace.o  ./HITSIC_Module/utilities/app_menu.o ./HITSIC_Module/utilities/app_menu_button.o ./HITSIC_Module/utilities/app_menu_nvm.o ./HITSIC_Module/utilities/app_menu_type.o ./HITSIC_Module/utilities/app_svbmp.o ./HITSIC_Module/utilities/drv_button.o ./HITSIC_Module/utilities/drv_cam_zf9v034.o ./HITSIC_Module/utilities/drv_disp_font.o ./HITSIC_Module/utilities/drv_disp_ssd1306.o ./HITSIC_Module/utilities/drv_disp_st7789.o ./HITSIC_Module/utilities/drv_dmadvp.o ./HITSIC_Module/utilities/drv_ftfx_flash.o ./HITSIC_Module/utilities/drv_imu_invensense.o ./HITSIC_Module/utilities/lib_adrcctrl.o ./HITSIC_Module/utilities/lib_disp_common.o ./HITSIC_Module/utilities/lib_graphic.o ./HITSIC_Module/utilities/lib_graphic_font.o ./HITSIC_Module/utilities/lib_list.o ./HITSIC_Module/utilities/lib_pidctrl.o ./HITSIC_Module/utilities/sys_extint.o ./HITSIC_Module/utilities/sys_pitmgr.o ./HITSIC_Module/utilities/sys_rmcall.o ./HITSIC_Module/utilities/sys_uartmgr.o  ./HITSIC_Module/d_mk66f18/extlib_port/EasyFlash-4.0.0/easyflash/port/ef_port.o  ./HITSIC_Module/d_mk66f18/app_menu_port.o ./HITSIC_Module/d_mk66f18/drv_dmadvp_port.o ./HITSIC_Module/d_mk66f18/hitsic_common.o ./HITSIC_Module/d_mk66f18/sys_extint_port.o ./HITSIC_Module/d_mk66f18/sys_pitmgr_port.o ./HITSIC_Module/d_mk66f18/sys_uartmgr_port.o   -larm_cortexM4lf_math
+Memory region         Used Size  Region Size  %age Used
+   PROGRAM_FLASH:      197128 B         1 MB     18.80%
+      SRAM_UPPER:      129680 B       192 KB     65.96%
+      SRAM_LOWER:          0 GB        64 KB      0.00%
+        FLEX_RAM:          0 GB         4 KB      0.00%
+Finished building target: HITSIC_MK66F18_MCUX.axf
+ 
+make --no-print-directory post-build
+Performing post-build steps
+arm-none-eabi-size "HITSIC_MK66F18_MCUX.axf" ; # arm-none-eabi-objcopy -v -O binary "HITSIC_MK66F18_MCUX.axf" "HITSIC_MK66F18_MCUX.bin" ; # checksum -p MK66FX1M0xxx18 -d "HITSIC_MK66F18_MCUX.bin"
+   text	   data	    bss	    dec	    hex	filename
+ 194264	   2864	 126816	 323944	  4f168	HITSIC_MK66F18_MCUX.axf
+ 

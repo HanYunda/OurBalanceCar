@@ -51,7 +51,8 @@ void ctrl_motorCtrl(float motorL,float motorR);
 float smoothavgfilter (float data);
 void ctrl_menuBuild(void);
 float PID_CtrlCal(PID *_pid ,float set , float curr);
-
+void Stop(void);
+void Start(void);
 
 #endif /* CTRL_BAL_H_ */
 
