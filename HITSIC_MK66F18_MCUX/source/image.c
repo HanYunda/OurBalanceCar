@@ -42,6 +42,7 @@ int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
 uint8_t threshold = 160;//阈值
 uint8_t* fullBuffer;//指向灰度图的首地址//这是我在这里新定义的，之前显示未定义
+extern float mid_err;
 
 ////////////////////////////////////////////
 //功能：二值化
@@ -431,7 +432,7 @@ void image_main()
         IMG[i][93] = black;//red;自己添加，显示oled屏幕中间线
         //mid_sum+=mid_line[i]-93.0f;
     }
-    //mid_err=mid_sum/((float)NEAR_LINE);
+    mid_err=60;//(float)(mid_line[60]-93);
 
 }
 

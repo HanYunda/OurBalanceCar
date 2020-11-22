@@ -267,7 +267,7 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&kp_midErr,"midErrkp",22,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",25,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",23,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",24,menuItem_data_global));
             //TODO: 在这里添加子菜单和菜单项
 }
