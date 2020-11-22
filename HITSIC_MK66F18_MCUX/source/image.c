@@ -40,8 +40,9 @@ uint8_t left_line[CAMERA_H], right_line[CAMERA_H];//赛道的左右边界
 uint8_t mid_line[CAMERA_H];
 int all_connect_num = 0;//所有白条子数
 uint8_t top_road;//赛道最高处所在行数
-uint8_t threshold = 160;//阈值
+uint8_t threshold=160;//阈值
 uint8_t* fullBuffer;//指向灰度图的首地址//这是我在这里新定义的，之前显示未定义
+uint8_t protect_sign = 0;
 extern float mid_err;
 
 ////////////////////////////////////////////
@@ -412,12 +413,14 @@ void get_mid_line(void)
 //输出：
 //备注：
 ///////////////////////////////////////////
-void image_main()
+void image_main(uint8_t midline)
 {
     float mid_sum=0.0f;
+    //int Midline=0;
     search_white_range();
     find_all_connect();
     find_road();
+    Protect();
     /*到此处为止，我们已经得到了属于赛道的结构体数组my_road[CAMERA_H]*/
     ordinary_two_line();
     get_mid_line();
@@ -430,11 +433,32 @@ void image_main()
             //mid_err=mid_line[i]-93;
         }
         IMG[i][93] = black;//red;自己添加，显示oled屏幕中间线
-        //mid_sum+=mid_line[i]-93.0f;
     }
-    mid_err=60;//(float)(mid_line[60]-93);
+        /*for(int i = midline - 1; i <= midline + 1; i ++)
+        {
+            Midline=Midline+mid_line[i];
+        }
+        Midline=Midline/3;*/
+    mid_err=mid_line[60]-93;
+
 
 }
-
-
+void Protect()
+{
+    int white_sign = 0;
+    for (int i = 2; i <= 3; i++)
+    {
+        for (int j = 80; j <= 100; j++)
+        {
+            if (IMG[101 - i][j] == white)
+            {
+                white_sign++;
+            }
+        }
+    }
+    if (white_sign <= 4)
+    {
+        protect_sign = 1;
+    }
+}
 

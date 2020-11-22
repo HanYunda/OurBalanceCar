@@ -5,6 +5,7 @@
  *      Author: MECHREVO
  */
 #include"ctrl_bal.h"
+#include"image.h"
 
 
 float imu_accel[3]={0};      //从陀螺仪读取的加速度值
@@ -13,7 +14,7 @@ float filterAngle=0.0f;      //滤波后的角度
 float accelAngle=0.0f;       //由加速度计算出的角度值
 float palstAngle=0.0f;       //由角速度直接积分得出的角度
 float ininAngle=0.0f;        //滤波初始化时的角度
-float AngleSet=21.35f;       //不变的机械零点
+float AngleSet=17.25f;       //不变的机械零点
 float angleSet=0.0f;         //机械零点角度
 float angelOutput = 0.0f;    //pid计算后的输出值
 float limitPWMRear=50.0f;    //电机反转限幅
@@ -22,6 +23,7 @@ float limitTurPwm=5.0f;     ////转向环输出限幅
 
 float mid_err = 0.0f;
 float divide_rSet = 0.0f;
+float rSet=0.0f;
 float w_set = 0.0f;
 float w_filter = 0.0f;
 float speed = 0.0f;
@@ -36,9 +38,9 @@ float get_speedr=0.0f;
 float get_speed=0.0f;
 float speed_PIDOUTPUT=0.0f;
 extern uint8_t mid_line[CAMERA_H];
-
-PID balaPid = {0.0f,0.0f,0.0f};
-PID dirPid = {0.0f,0.0f,0.0f};
+extern uint8_t protect_sign;
+PID balaPid = {14.0f,0.0f,0.0f};
+PID dirPid = {1.0f,0.0f,0.0f};
 PID speedPid = {0.0f,0.0f,0.0f};
 
 /**
@@ -115,7 +117,8 @@ void ctrl_balanceContral(void)
     angelOutput = PID_CtrlCal(&balaPid,angleSet,filterAngle);
     angelOutput = angelOutput > limitPWMRear? limitPWMRear: angelOutput;
     angelOutput = angelOutput < limitPWMFront? limitPWMFront: angelOutput;
-    ctrl_motorCtrl(angelOutput + pwm_diff,angelOutput - pwm_diff);
+    ctrl_motorCtrl(angelOutput - pwm_diff,angelOutput + pwm_diff);
+    Stop();
 }
 
 /**
@@ -175,10 +178,18 @@ void ctrl_motorCtrl(float motorL,float motorR)
 
 void ctrl_dirContorl(void)
 {
-    mid_err=(float)(mid_line[60]-93);
     divide_rSet = mid_err * kp_midErr;
+    rSet=1/divide_rSet;
     w_set = get_speed *divide_rSet;
-    w_filter = ctrl_angToRad(imu_palst[0]);//这里直接读取的是度/s需要转换成弧度/s
+    //w_filter = ctrl_angToRad(imu_palst[0]);//这里直接读取的是度/s需要转换成弧度/s
+    if(imu_palst[0] >= 0)
+    {
+        w_filter = sqrt(pow(ctrl_angToRad(imu_palst[0]),2) + pow(ctrl_angToRad(imu_palst[1]) , 2));
+    }
+    else
+    {
+        w_filter = -sqrt(pow(ctrl_angToRad(imu_palst[0]),2) + pow(ctrl_angToRad(imu_palst[1]) , 2));
+    }
     pwm_diff = PID_CtrlCal(&dirPid,w_set,w_filter);
     pwm_diff = pwm_diff > limitTurPwm? limitTurPwm: pwm_diff;
     pwm_diff = pwm_diff < -limitTurPwm? -limitTurPwm: pwm_diff;
@@ -230,31 +241,28 @@ float smoothavgfilter (float data)
  */
 void SendData(void)
 {
-    float data[4]={mid_err,w_filter,w_set,1/divide_rSet};
+    float data[4]={mid_err,imu_palst[0],imu_palst[1],imu_palst[2]};
     SCHOST_VarUpload(data,4);
 }
 
-
-/**
- * @brief : 参数菜单函数
- *
- * @param  void
- */
 void ctrl_menuBuild(void)
 {
-            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",25,menu_menuRoot);
+            static menu_list_t *ctrlList_1=MENU_ListConstruct("List_1",30,menu_menuRoot);
             assert(ctrlList_1);
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,ctrlList_1, "ctrlList_1", 0, 0));
             //List_1
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(nullType,NULL, "", 0, 0));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kp,"balakp",10,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&rSet,"rSet",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(nullType,NULL, "", 0, 0));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kp,"balakp",10,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kd,"balakd",11,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.ki,"balaki",12,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&angleSet,"angleSet",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&AngleSet,"AngleSet",13,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&filterAngle,"filterAngle",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&w_filter,"W",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            //MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&imu_palst[0],"imu_palst[0]",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            //MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&imu_palst[1],"imu_palst[1]",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
+            //MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&imu_palst[2],"imu_palst[2]",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMRear,"limPWMRear",14,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitPWMFront,"limPWMFrot",15,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&limitTurPwm,"limTurPwm",1,menuItem_data_region));//转弯差速限幅
@@ -268,6 +276,19 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",23,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",24,menuItem_data_global));
+            //MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(variType,&imageTH, "imgTH", 24,menuItem_data_region));
+            //MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(variType,&threshold, "threshold",25, menuItem_data_region));
             //TODO: 在这里添加子菜单和菜单项
 }
+/**
+ * @brief : 参数菜单函数
+ *
+ * @param  void
+ */
+void Stop(void)
+{
+    if(protect_sign==1)
+    {
+        speed_set=0;
+
+    }}
