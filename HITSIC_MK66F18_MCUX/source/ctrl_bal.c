@@ -22,6 +22,7 @@ float limitTurPwm=5.0f;     ////转向环输出限幅
 
 float mid_err = 0.0f;
 float divide_rSet = 0.0f;
+float rSet=0.0f;
 float w_set = 0.0f;
 float w_filter = 0.0f;
 float speed = 0.0f;
@@ -175,8 +176,8 @@ void ctrl_motorCtrl(float motorL,float motorR)
 
 void ctrl_dirContorl(void)
 {
-    mid_err=(float)(mid_line[60]-93);
     divide_rSet = mid_err * kp_midErr;
+    rSet=1/divide_rSet;
     w_set = get_speed *divide_rSet;
     w_filter = ctrl_angToRad(imu_palst[0]);//这里直接读取的是度/s需要转换成弧度/s
     pwm_diff = PID_CtrlCal(&dirPid,w_set,w_filter);
@@ -247,8 +248,8 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(nullType, NULL, "EXAMPLE", 0, 0));
             MENU_ListInsert(menu_menuRoot, MENU_ItemConstruct(menuType,ctrlList_1, "ctrlList_1", 0, 0));
             //List_1
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(nullType,NULL, "", 0, 0));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kp,"balakp",10,menuItem_data_global));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&rSet,"rSet",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(nullType,NULL, "", 0, 0));
+            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kp,"balakp",10,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.kd,"balakd",11,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&balaPid.ki,"balaki",12,menuItem_data_global));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&angleSet,"angleSet",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
@@ -268,6 +269,7 @@ void ctrl_menuBuild(void)
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedl,"speedl",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&get_speedr,"speedr",0,menuItem_data_ROFlag|menuItem_data_NoSave | menuItem_data_NoLoad));
             MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&speed_set,"speedset",23,menuItem_data_global));
-            MENU_ListInsert(ctrlList_1,MENU_ItemConstruct(varfType,&mid_err,"miderr",24,menuItem_data_global));
+
+
             //TODO: 在这里添加子菜单和菜单项
 }

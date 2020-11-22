@@ -430,9 +430,8 @@ void image_main()
             //mid_err=mid_line[i]-93;
         }
         IMG[i][93] = black;//red;自己添加，显示oled屏幕中间线
-        //mid_sum+=mid_line[i]-93.0f;
     }
-    mid_err=60;//(float)(mid_line[60]-93);
+    mid_err=mid_line[60]-93;
 
 }
 
