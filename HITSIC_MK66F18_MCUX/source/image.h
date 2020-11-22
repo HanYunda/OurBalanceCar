@@ -24,7 +24,8 @@
 #define MISS 255
 #define white_num_MAX 10//每行最多允许白条数
 
-/////////////////////////////
+
+
 #define black 0
 #define white 1
 #define blue  2
@@ -47,8 +48,9 @@ void find_all_connect();
 void find_road();
 uint8_t find_continue(uint8_t i_start, uint8_t j_start);
 void ordinary_two_line(void);
-void image_main();
+void image_main(uint8_t);
 void get_mid_line(void);
+void Protect(void);
 
 void my_memset(uint8_t* ptr, uint8_t num, uint8_t size);
 #endif /* IMAGE_H_ */

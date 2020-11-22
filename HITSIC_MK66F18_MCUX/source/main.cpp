@@ -91,8 +91,10 @@ FATFS fatfs;                                   //逻辑驱动器的工作区
 /*PHOTO HEADER FILE*/
 #include "image.h"
 
-
+void MODE_Switch(void);
 void MENU_DataSetUp(void);
+
+uint8_t midline=73;
 extern uint8_t mid_line[CAMERA_H];
 //extern float mid_err;
 
@@ -105,13 +107,13 @@ inv::i2cInterface_t imu_i2c(nullptr, IMU_INV_I2cRxBlocking, IMU_INV_I2cTxBlockin
 inv::mpu6050_t imu_6050(imu_i2c);
 
 disp_ssd1306_frameBuffer_t dispBuffer;
-graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);//用v 2.0.1版本的模组库就可以消除错误
+//graphic::bufPrint0608_t<disp_ssd1306_frameBuffer_t> bufPrinter(dispBuffer);//用v 2.0.1版本的模组库就可以消除错误
+
 
 void main(void)
 {
-
     /** 初始化阶段，关闭总中断 */
-    HAL_EnterCritical();
+     HAL_EnterCritical();
 
     /** BSP（板级支持包）初始化 */
     RTECLK_HsRun_180MHz();
@@ -153,20 +155,20 @@ void main(void)
     /** 初始化摄像头 */
     //CAM_ZF9V034_UnitTest();
     cam_zf9v034_configPacket_t cameraCfg;
-            CAM_ZF9V034_GetDefaultConfig(&cameraCfg);                                   //设置摄像头配置
-            CAM_ZF9V034_CfgWrite(&cameraCfg);                                   //写入配置
-            dmadvp_config_t dmadvpCfg;
-            CAM_ZF9V034_GetReceiverConfig(&dmadvpCfg, &cameraCfg);    //生成对应接收器的配置数据，使用此数据初始化接受器并接收图像数据。
-            DMADVP_Init(DMADVP0, &dmadvpCfg);
-            dmadvp_handle_t dmadvpHandle;
-            DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_UnitTestDmaCallback);//CAM_ZF9V034_DmaCallback
-            uint8_t *imageBuffer0 = new uint8_t[DMADVP0->imgSize];
-            //uint8_t *imageBuffer1 = new uint8_t[DMADVP0->imgSize];
-            //uint8_t *fullBuffer = NULL;     //之前没有注释掉，总花屏
-            disp_ssd1306_frameBuffer_t *dispBuffer = new disp_ssd1306_frameBuffer_t;
-            DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer0);
-            //DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer1);
-            DMADVP_TransferStart(DMADVP0, &dmadvpHandle);
+    CAM_ZF9V034_GetDefaultConfig(&cameraCfg);                                   //设置摄像头配置
+    CAM_ZF9V034_CfgWrite(&cameraCfg);                                   //写入配置
+    dmadvp_config_t dmadvpCfg;
+    CAM_ZF9V034_GetReceiverConfig(&dmadvpCfg, &cameraCfg);    //生成对应接收器的配置数据，使用此数据初始化接受器并接收图像数据。
+    DMADVP_Init(DMADVP0, &dmadvpCfg);
+    dmadvp_handle_t dmadvpHandle;
+    DMADVP_TransferCreateHandle(&dmadvpHandle, DMADVP0, CAM_ZF9V034_DmaCallback);//CAM_ZF9V034_DmaCallback
+    uint8_t *imageBuffer0 = new uint8_t[DMADVP0->imgSize];
+    //uint8_t *imageBuffer1 = new uint8_t[DMADVP0->imgSize];
+    //uint8_t *fullBuffer = NULL;     //之前没有注释掉，总花屏
+    disp_ssd1306_frameBuffer_t *dispBuffer = new disp_ssd1306_frameBuffer_t;
+    DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer0);
+    //DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, imageBuffer1);
+    DMADVP_TransferStart(DMADVP0, &dmadvpHandle);
     //TODO: 在这里初始化摄像头
     /** 初始化IMU */
     if (true != imu_6050.Detect())
@@ -191,20 +193,26 @@ void main(void)
     /** 控制环初始化 */
     ctrl_filterInit();
     ctrl_init();
+    SendData();
     //TODO: 在这里初始化控制环
     /** 初始化结束，开启总中断 */
+    //PORT_SetPinInterruptConfig(PORTA,9U,kPORT_InterruptEitherEdge);//boma按键的触发模式
+    //extInt_t::insert(PORTA,9U,MODE_Switch);//中断服务函数
     HAL_ExitCritical();
-
     /** 内置DSP函数测试 */
     float f = arm_sin_f32(0.6f);
+
 
     while (true)
     {
         while (kStatus_Success != DMADVP_TransferGetFullBuffer(DMADVP0, &dmadvpHandle, &fullBuffer));
-        THRE();
-        //head_clear();
-        image_main();
         dispBuffer->Clear();
+       // if(!GPIO_PinRead(GPIOA,9))
+        //{
+            //MENU_Suspend();
+            //DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+        //}
+
         const uint8_t imageTH = 160;
         for (int i = 0; i < cameraCfg.imageRow; i += 2)
         {
@@ -219,9 +227,46 @@ void main(void)
                    }
               }
         }
-        //SCHOST_ImgUpload(fullBuffer,120,188);//fullBuffer是二维数组,这里是列指针，直接输IMG不行  &IMG[0][0]
-        //SCHOST_ImgUpload(&IMG[0][0],120,188);
+        SCHOST_ImgUpload(fullBuffer,120,188);//fullBuffer是二维数组,这里是列指针，直接输IMG不行  &IMG[0][0]
+
+        SCHOST_ImgUpload(&IMG[0][0],120,188);
+
+        if (!GPIO_PinRead(GPIOA,9))
+        {
+            MENU_Suspend();
+            DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+            if(GPIO_PinRead(GPIOA,9))
+            {
+                DISP_SSD1306_Init();
+                MENU_Resume();
+                break;
+            }
+        }
+        /*while(!GPIO_PinRead(GPIOA,9))
+                {
+            i++;  }
+        if(i/2==0||i==0)
+        {
+
+            MENU_Resume();
+        }
+        else
+        {
+            MENU_Suspend();
+              DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);
+        }*/
         //SendData();
+        /*if(GPIO_PinRead(GPIOA,9)==0||GPIO_PinRead(GPIOA,10)==0||GPIO_PinRead(GPIOA,11)==0||GPIO_PinRead(GPIOA,12)==0)
+        {
+              MENU_Resume();
+            GPIO_PinWrite(GPIOE,26,1U);
+        }
+        else if(GPIO_PinRead(GPIOA,9))
+        {
+            //MENU_Suspend();
+            //DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);//dispBuffer
+            GPIO_PinWrite(GPIOE,26,0U);
+        }*/
         //DISP_SSD1306_BufferUpload((uint8_t*) dispBuffer);//dispBuffer
         DMADVP_TransferSubmitEmptyBuffer(DMADVP0, &dmadvpHandle, fullBuffer);
         DMADVP_TransferStart(DMADVP0,&dmadvpHandle);
@@ -232,6 +277,7 @@ void main(void)
 void MENU_DataSetUp(void)
 {
     ctrl_menuBuild();
+
     //TODO: 在这里添加子菜单和菜单项
 }
 
@@ -244,6 +290,8 @@ void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transfe
     DMADVP_EdmaCallbackService(dmadvpHandle, transferDone);
 
     result = DMADVP_TransferStart(dmadvpHandle->base, dmadvpHandle);
+
+    //MENU_Resume();
     //PRINTF("new full buffer: 0x%-8.8x = 0x%-8.8x\n", handle->fullBuffer.front(), handle->xferCfg.destAddr);
     /*if(kStatus_Success != result)
     {
@@ -251,10 +299,33 @@ void CAM_ZF9V034_DmaCallback(edma_handle_t *handle, void *userData, bool transfe
         PRINTF("transfer stop! insufficent buffer\n");
     }*/
     //TODO: 添加图像处理（转向控制也可以写在这里）
-    //THRE();
-    //head_clear();
-    //image_main();
+    THRE();
+    head_clear();
+    image_main(midline);
 }
+   /*void THRE()
+{
+    uint8_t* map;
+    uint8_t* my_map;
+    map = fullBuffer;
+    for (int i = 0; i < 120; i++)
+    {
+        my_map = &IMG[i][0];
+        for (int j = 0; j < 188; j++)
+        {
+            if ((*map) > threshold)
+                (*my_map) = 255;//255;
+            else (*my_map) = 0;
+            map++;
+            my_map++;
+        }
+    }
+}*/
+void MODE_Switch(void)
+{
+    GPIO_PortToggle(GPIOE,1U<<26);
+}
+
 
 /**
  * 『灯千结的碎碎念』 Tips by C.M. :
